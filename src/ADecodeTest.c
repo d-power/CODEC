@@ -69,21 +69,22 @@ void *G711DecThread(void *Argv)
     AUDIO_CHN_ATTR_S Attr;
     memset(&Attr, 0, sizeof(AUDIO_CHN_ATTR_S));
 
-    switch (Type)
-    {
-    case DecG711A:
+    if (Type == DecG711A)
         Attr.enType = PT_G711A;
-        break;
-    case DecG711U:
+    else if (Type == DecG711U)
         Attr.enType = PT_G711U;
-        break;
-    }
 
     // 给解码器分配多少缓冲区，字节
     Attr.u32BufSize = DEC_BUFFER_BYTES;
 
     // 创建一个解码通道
     DecChannel = ADEC_CreateChn(&Attr);
+
+    if (DecChannel < 0)
+    {
+        printf("Create Channel Failed!\n");
+        return NULL;
+    }
 
     ADUIO_STREAM_S StreamIn;
     memset(&StreamIn, 0, sizeof(ADUIO_STREAM_S));
@@ -148,6 +149,8 @@ void *G711DecThread(void *Argv)
     Buf = NULL;
 
     ADEC_DestroyChn(DecChannel); // 销毁解码通道
+
+    return NULL;
 }
 
 void G711Dec(DecType_E type)
@@ -182,21 +185,22 @@ void FileDec(DecType_E Type)
     AUDIO_CHN_ATTR_S Attr;
     memset(&Attr, 0, sizeof(AUDIO_CHN_ATTR_S));
 
-    switch (Type)
-    {
-    case DecMP3:
+    if (Type == DecMP3)
         Attr.enType = PT_MP3;
-        break;
-    case DecAAC:
+    else if (Type == DecAAC)
         Attr.enType = PT_AAC;
-        break;
-    }
 
     // 不用分配缓冲区，更底层的编解码器会自动分配
     Attr.u32BufSize = 0;
 
     // 创建一个解码通道
     DecChannel = ADEC_CreateChn(&Attr);
+
+    if (DecChannel < 0)
+    {
+        printf("Create Channel Failed!\n");
+        return;
+    }
 
     ADUIO_STREAM_S StreamIn;
     memset(&StreamIn, 0, sizeof(ADUIO_STREAM_S));

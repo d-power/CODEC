@@ -70,22 +70,22 @@ void *G711EncThread(void *Argv)
     AUDIO_CHN_ATTR_S Attr;
     memset(&Attr, 0, sizeof(AUDIO_CHN_ATTR_S));
 
-    switch (Type)
-    {
-    case EncG711A:
+    if (Type == EncG711A)
         Attr.enType = PT_G711A;
-        break;
-
-    case EncG711U:
+    else if (Type == EncG711U)
         Attr.enType = PT_G711U;
-        break;
-    }
 
     // 给编码通道分配多少缓冲区，字节
     Attr.u32BufSize = ENC_BUFFER_BYTES;
 
     // 创建一个编码通道
     EncChannel = AENC_CreateChn(&Attr);
+
+    if (EncChannel < 0)
+    {
+        printf("Create Channel Failed!\n");
+        return NULL;
+    }
 
     ADUIO_STREAM_S StreamIn;
     memset(&StreamIn, 0, sizeof(ADUIO_STREAM_S));
@@ -155,6 +155,8 @@ void *G711EncThread(void *Argv)
 
     // 销毁编码通道
     AENC_DestroyChn(EncChannel);
+
+    return NULL;
 }
 
 void G711Enc(EncType_E type)
@@ -191,16 +193,10 @@ void FileEnc(EncType_E Type)
     AUDIO_CHN_ATTR_S Attr;
     memset(&Attr, 0, sizeof(AUDIO_CHN_ATTR_S));
 
-    switch (Type)
-    {
-    case EncMP3:
+    if (Type == EncMP3)
         Attr.enType = PT_MP3;
-        break;
-
-    case EncAAC:
+    else if (Type == EncAAC)
         Attr.enType = PT_AAC;
-        break;
-    }
 
     // MP3不用分配缓冲区，更底层的编解码器会自动分配
     Attr.u32BufSize = 0;
@@ -208,6 +204,12 @@ void FileEnc(EncType_E Type)
     Attr.u32SampleRate = 8000;
 
     EncChannel = AENC_CreateChn(&Attr);
+
+    if (EncChannel < 0)
+    {
+        printf("Create Channel Failed!\n");
+        return;
+    }
 
     FILE *ReadFd;
 
@@ -240,6 +242,8 @@ void FileEnc(EncType_E Type)
     ReadFd = NULL;
 
     AENC_DestroyChn(EncChannel);
+
+    return;
 }
 
 int main(int argc, char **argv)

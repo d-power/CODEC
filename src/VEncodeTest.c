@@ -10,6 +10,7 @@ Bug report: liuzhengzhong@d-power.com.cn
 ******************************************************************************/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
 #include <stdarg.h>
@@ -18,8 +19,11 @@ Bug report: liuzhengzhong@d-power.com.cn
 #include <video/ve/VEncApi.h>
 #include <video/ve/ViApi.h>
 
-#define SRC_WIDTH 640
-#define SRC_HEIGHT 480
+static int SRC_WIDTH = 1280;
+static int SRC_HEIGHT = 720;
+
+static int DST_WIDTH = 640;
+static int DST_HEIGHT = 360;
 
 // 根据传入参数赋值的编码输出文件
 static char DstFile[64] = {0};
@@ -29,9 +33,13 @@ static const char *Usage =
     "OVERVIEW: Video Encode Function Test Application! \n"
     "Usage: ./VEncodeTest [options] <arg> \n"
     "\nOPTIONS:\n"
-    "-h [-?|--help]         Print VideoEncode Usage Information And Exit \n"
-    "-d [--dstfile]         Destination File To Encode. \n"
-    "\nDemo: ./VEncodeTest -d H264.dat \n"
+    "-? [--help]            Print VideoEncode Usage Information And Exit \n"
+    "-d [--df]              Destination File To Encode. \n"
+    "-w [--sw]              Camera Source Width, default is 1280. \n"
+    "-h [--sh]              Camera Source High, default is 720. \n"
+    "-W [--dw]              Encode Width, default is 640. \n"
+    "-H [--dh]              Encode High, default is 360. \n"
+    "\nDemo: ./VEncodeTest -d H264.dat -w 1280 -h 720 -W 640 -H 360 \n"
     "\n********************************************************************************\n";
 
 int PrintUsage()
@@ -73,32 +81,36 @@ void *EncodeThread(void *Param)
         ENC_FRAME_S Frame;
 
         // 从video in获取一帧
-        if(VI_GetFrame(&Frame))
+        if(!VI_GetFrame(&Frame))
         {
-            printf("X5_VI_GetFrame() Successful\n");
+            printf("X5_VI_GetFrame() Failed!\n");
+            continue;
         }
-
-        Frame.stSize.Width = SRC_WIDTH;
-        Frame.stSize.Height = SRC_HEIGHT;
 
         // 送给编码器
-        if(VENC_SendFrame(Channel, &Frame))
+        if(VENC_SendFrame(Channel, &Frame) < 0)
         {
-            printf("X5_VENC_SendFrame() Successful\n");
+            printf("VENC_SendFrame() Failed!\n");
+            continue;
         }
-
-        // 编码一帧
-        int Status = VENC_StartRecvPic(Channel);
-        printf("X5_VENC_StartRecvPic[%s]\n", EncStatus[Status + 1]);
 
         VENC_STREAM_S Stream;
         memset(&Stream, 0, sizeof(VENC_STREAM_S));
 
         // 获取编码后的数据
-        if(VENC_GetStream(Channel, &Stream))
+        if(!VENC_GetStream(Channel, &Stream))
         {
-            printf("X5_VENC_GetStream() Successful\n");
+            printf("VENC_GetStream() Failed!\n");
+            continue;
         }
+
+        // if (Count % 5 == 0)
+        // {
+        //     VENC_RequestIDR(Channel);
+        // }
+
+        if (Stream.s32Flag)
+            printf("Get I Frame!\n");
 
         // 写入编码后的数据
         fwrite(Stream.pData0, 1, Stream.u32Size0, Fd);
@@ -110,30 +122,36 @@ void *EncodeThread(void *Param)
         }
 
         // 释放编码过的数据
-        if(VENC_ReleaseStream(Channel, &Stream))
+        if(!VENC_ReleaseStream(Channel, &Stream))
         {
-            printf("X5_VENC_ReleaseStream() Successful\n");
+            printf("VENC_ReleaseStream() Failed!\n");
         }
 
         // 释放video in内的一帧
-        if(VI_ReleaseFrame(&Frame))
+        if(!VI_ReleaseFrame(&Frame))
         {
-            printf("X5_VI_ReleaseFrame() Successful\n");
+            printf("VI_ReleaseFrame() Failed!\n");
         }
     }
 
     fclose(Fd);
     Fd = NULL;
+
+    return NULL;
 }
 
 int main(int argc, char **argv)
 {
-    char *short_opt = "h?d:";
+    char *short_opt = "?:d:w:h:W:H:";
 
     static struct option longopts[] =
     {
-        {"help", no_argument, NULL, 'h'},
-        {"dstfile", required_argument, NULL, 'd'},
+        {"help", no_argument, NULL, '?'},
+        {"df", required_argument, NULL, 'd'},
+        {"sw", required_argument, NULL, 'w'},
+        {"sh", required_argument, NULL, 'h'},
+        {"dw", required_argument, NULL, 'W'},
+        {"dh", required_argument, NULL, 'H'},
         {NULL, 0, 0, 0}
     };
 
@@ -146,11 +164,26 @@ int main(int argc, char **argv)
         switch(opt)
         {
             case '?':
-            case 'h':
                 return PrintUsage();
 
             case 'd':
                 strcpy(DstFile, optarg);
+                break;
+
+            case 'w':
+                SRC_WIDTH = atoi(optarg);
+                break;
+
+            case 'h':
+                SRC_HEIGHT = atoi(optarg);
+                break;
+
+            case 'W':
+                DST_WIDTH = atoi(optarg);
+                break;
+
+            case 'H':
+                DST_HEIGHT = atoi(optarg);
                 break;
 
             default:
@@ -159,49 +192,52 @@ int main(int argc, char **argv)
     }
 
     // 使能设备video in设备，即/dev/video0
-    if(VI_EnableDev())
+    if(!VI_EnableDev())
     {
-        printf("X5_EnableDev() Successful\n");
+        printf("EnableDev() Failed!\n");
+        return 0;
     }
 
     // 初始化编码器
-    if(VENC_Init())
+    if(!VENC_Init())
     {
-        printf("X5_VENC_Init() Successful\n");
+        printf("VENC_Init() Failed!\n");
+        return 0;
     }
 
     VENC_ATTR_S EncAttr;
     memset(&EncAttr, 0, sizeof(VENC_ATTR_S));
 
     EncAttr.enType = PAYLOAD_TYPE_H264;
-    EncAttr.u32BitRate = 1 * 1024 * 1024;
-    EncAttr.u32FrameRate = 30;
     EncAttr.u32SrcWidth = SRC_WIDTH;
     EncAttr.u32SrcHeight = SRC_HEIGHT;
-    EncAttr.u32DstWidth = SRC_WIDTH;
-    EncAttr.u32DstHeight = SRC_HEIGHT;
+    EncAttr.u32DstWidth = DST_WIDTH;
+    EncAttr.u32DstHeight = DST_HEIGHT;
+    EncAttr.u32BitRate = 512 * 1024 *1024;
+//    EncAttr.u32EnableQP = 1;
+//    EncAttr.u32IQP = 30;
+//    EncAttr.u32PQP = 45;
 
     // 创建编码器
     Channel = VENC_CreateChn(&EncAttr);
 
-    if(Channel >= 0)
+    if(Channel < 0)
     {
-        printf("X5_VENC_CreateChn() Successful\n");
+        printf("VENC_CreateChn() Failed!\n");
+        return 0;
     }
 
     VI_DEV_ATTR_S Attr;
     memset(&Attr, 0, sizeof(VI_DEV_ATTR_S));
 
-    Attr.enDataFmt = VI_DATA_FMT_YUV420;
     Attr.stSize.Width = SRC_WIDTH;
     Attr.stSize.Height = SRC_HEIGHT;
-    Attr.u32Angle = 0;
-    Attr.u32TimePerFrame = 30;
 
     // 设置video in属性
-    if(VI_SetDevAttr(&Attr))
+    if(!VI_SetDevAttr(&Attr))
     {
-        printf("X5_VI_SetDevAttr() Successful\n");
+        printf("VI_SetDevAttr() Failed!\n");
+        return 0;
     }
 
     pthread_t Pid;
@@ -211,19 +247,19 @@ int main(int argc, char **argv)
     // 等待线程结束再执行一些回收动作
     pthread_join(Pid, NULL);
 
-    if(VENC_DestroyChn(Channel))
+    if(!VENC_DestroyChn(Channel))
     {
-        printf("X5_VENC_DestroyChn() Successful\n");
+        printf("VENC_DestroyChn() Failed!\n");
     }
 
-    if(VENC_DeInit())
+    if(!VENC_DeInit())
     {
-        printf("X5_VENC_DeInit() Successful\n");
+        printf("VENC_DeInit() Failed!\n");
     }
 
-    if(VI_DisableDev())
+    if(!VI_DisableDev())
     {
-        printf("X5_DisableDev() Successful\n");
+        printf("VI_DisableDev() Failed!\n");
     }
 
     return 0;

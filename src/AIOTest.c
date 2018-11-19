@@ -110,10 +110,10 @@ static void *PlayBackThread(void *arg)
     for (i = 0; i < 500; i++)
     {
         if (fread(Buffer, 1, BlockSize, Fd) != BlockSize)
-            break;
-
-        if (i <= 5)
+        {
+            fseek(Fd, 0, SEEK_SET);
             continue;
+        }
 
         if (AO_SendFrame(Channel, &Frame,
                          BlockSize * GetAttr.Cache.u32BlockTime) != 0)

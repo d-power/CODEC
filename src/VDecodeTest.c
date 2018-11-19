@@ -43,16 +43,17 @@ static const char *Usage =
     "OVERVIEW: Video Decode Function Test Application! \n"
     "Usage: ./VDecodeTest [options] <arg> \n"
     "\nOPTIONS:\n"
-    "-h [-?|--help]         Print VDecodeTest Usage Information And Exit \n"
-    "-t [--type]            Decode Type : 1.H264 2.MJPEG \n"
-    "-s [--srcfile]         Source File To Decode. \n"
-    "-c [--channel]         Specify Display Channel Number. \n"
-    "-b [--black]           Specify 1 If Need Flush FrameBuffer Transparent. \n"
-    "-W [--width]           Specify Width To Decode \n"
-    "-H [--high]            Specify High To Decode \n"
-    "-X [--xaxis]           Specify Xaxis To Show \n"
-    "-Y [--yaxis]           Specify Yaxis To Show \n"
-    "\nDemo: ./VDecodeTest -t 1 -s H264.dat -c 1 -X 100 -Y 100 -W 320 -H 240\n"
+    "-? [--help]            Print VDecodeTest Usage Information And Exit \n"
+    "-t [--type]            Decode Type : 1.H264 2.MJPEG, default is 1 \n"
+    "-s [--sf]              Source File To Decode. \n"
+    "-w [--sw]              Source Stream Width, default is 1280. \n"
+    "-h [--sh]              Source Stream High, default is 720. \n"
+    "-r [--sr]              Source Stream Clock Rate, default is 15. \n"
+    "-W [--dw]              Display Width, default is 320. \n"
+    "-H [--dh]              Display High, default is 240. \n"
+    "-X [--dx]              Display X, default is 0. \n"
+    "-Y [--dy]              Display Y, default is 0. \n"
+    "\nDemo: ./VDecodeTest -t 1 -s H264.dat -w 1280 -h 720 -r 15 -W 320 -H 240 -X 0 -Y 0 \n"
     "\n********************************************************************************\n";
 
 int PrintUsage()
@@ -61,26 +62,25 @@ int PrintUsage()
     return 0;
 }
 
-#define DEC_RATE 25
-
-#define DEC_WIDTH 640
-#define DEC_HIGH 480
+// 解码源帧率
+static int DEC_RATE = 15;
+// 解码源宽度
+static int DEC_W = 1280;
+// 解码源高度
+static int DEC_H = 720;
 
 // 屏幕显示宽度
-// #define DISP_WIDTH 400
-static int DISP_WIDTH = 400;
+static int DISP_W = 320;
 // 屏幕显示高度
-// #define DISP_HIGH 240
-static int DISP_HIGH = 240;
+static int DISP_H = 240;
 
-// 屏幕显示位置X
+// 屏幕显示位置X值
 static int DISP_X = 0;
-// 屏幕显示位置Y
+// 屏幕显示位置Y值
 static int DISP_Y = 0;
 
 // 显示通道
-// #define DISP_CHANNEL 1
-static int DISP_CHANNEL = 0;
+#define DISP_CHANNEL 1
 // 显示图层
 #define DISP_LAYER 0
 
@@ -97,77 +97,102 @@ const char *DecResult[] = {
     "VDEC_UNSUPPORTED",
     "VDEC_CHANNEL_ERROR"};
 
-void Ui_Display_Black()
+void FlushFrameBuffer(unsigned int color)
 {
-    int fbfd = 0;
-    char *fbp = 0;
+    int FbFd;
 
-    static int xres = 0;
-    static int yres = 0;
-    static int bits_per_pixel = 0;
+    FbFd = open("/dev/fb0", O_RDWR, 0);
 
-    struct fb_var_screeninfo vinfo;
+    if (!FbFd)
+    {
+        printf("Failed To Open File :%s", "/dev/fb0");
+        return;
+    }
+
     struct fb_fix_screeninfo finfo;
 
-    long int screensize = 0;
-
-    struct fb_bitfield red;
-    struct fb_bitfield green;
-    struct fb_bitfield blue;
-
-    unsigned int *ptr = NULL;
-
-    fbfd = open("/dev/fb0", O_RDWR);
-
-    if (!fbfd)
+    // 获取fb设备信息
+    if (ioctl(FbFd, FBIOGET_FSCREENINFO, &finfo) < 0)
     {
-        printf("Error: cannot open framebuffer device.\n");
-        exit(1);
+        printf("Couldn't get console hardware info");
+        return;
     }
 
-    if (ioctl(fbfd, FBIOGET_FSCREENINFO, &finfo))
+    // 偏移量，按页计算，通常为0
+    unsigned int FbMemOffset = (((long)finfo.smem_start) -
+                                (((long)finfo.smem_start) & ~(getpagesize() - 1)));
+    // 获取出的fb长度
+    unsigned int FbMemLen = finfo.smem_len + FbMemOffset;
+    // fb的起始地址
+    unsigned char *FbMem = mmap(NULL, FbMemLen,
+                                PROT_READ | PROT_WRITE, MAP_SHARED, FbFd, 0);
+
+    if (FbMem == (unsigned char *)-1)
     {
-        printf("Error：reading fixed information.\n");
-        exit(2);
+        printf("Unable to memory map the video hardware");
+        FbMem = NULL;
+        return;
     }
 
-    if (ioctl(fbfd, FBIOGET_VSCREENINFO, &vinfo))
+    struct fb_var_screeninfo vinfo;
+
+    if (ioctl(FbFd, FBIOGET_VSCREENINFO, &vinfo) < 0)
     {
-        printf("Error: reading variable information.\n");
-        exit(3);
+        printf("Couldn't get console pixel format");
+        return;
     }
 
-    printf("R:%d,G:%d,B:%d \n", vinfo.red, vinfo.green, vinfo.blue);
-    printf("%dx%d, %dbpp\n", vinfo.xres, vinfo.yres, vinfo.bits_per_pixel);
+    // 屏幕宽度
+    unsigned int FbWidth = vinfo.xres;
+    // 屏幕高度
+    unsigned int FbHeight = vinfo.yres;
+    // 屏幕一行字节数
+    unsigned int FbPitch = finfo.line_length;
 
-    xres = vinfo.xres;
-    yres = vinfo.yres;
-    bits_per_pixel = vinfo.bits_per_pixel;
-    //计算屏幕的总大小（字节）
-    screensize = vinfo.xres * vinfo.yres * vinfo.bits_per_pixel / 8;
+    // 屏幕一个点字节数
+    unsigned int FbPixelByte = FbPitch / FbWidth;
+    // unsigned int FbRestXOffset = 0;
 
-    printf("screensize=%d byte\n", screensize);
+    // unsigned char *FbMem2 = FbMem + FbPitch * FbHeight;
 
-    //对象映射
-    fbp = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
+    unsigned int *tmp = (unsigned int *)FbMem;
 
-    if ((int)fbp == -1)
-    {
-        printf("Error: failed to map framebuffer device to memory.\n");
-        exit(4);
-    }
-
-    ptr = (unsigned int *)fbp;
     int i, j;
 
-    for (i = 0; i < vinfo.xres; i++)
-        for (j = 0; j < vinfo.yres; j++)
-            *ptr++ = 0x80000000;
+    for (i = 0; i < FbHeight; i++)
+    {
+        for (j = 0; j < FbWidth; j++)
+        {
+            tmp[j] = color;
+        }
+        tmp += FbPitch / FbPixelByte;
+    }
 
-    // memset(fbp,0,screensize);
-    //删除对象映射
-    munmap(fbp, screensize);
-    close(fbfd);
+    munmap(FbMem, FbMemLen);
+    FbMem = NULL;
+
+    close(FbFd);
+    FbFd = -1;
+
+    return;
+}
+
+void DecH264Display(void)
+{
+    // 4个图层，从优先级低使能，优先级0 < 1 < 2 < 3
+    // 不允许不使能Channel 0，Layer 0，直接使用Channel 0，Layer 1
+
+    VO_LAYER_INFO VoInfo;
+    memset(&VoInfo, 0, sizeof(VO_LAYER_INFO));
+
+    VoInfo.Rect.X = DISP_X;
+    VoInfo.Rect.Y = DISP_Y;
+    VoInfo.Rect.W = DISP_W;
+    VoInfo.Rect.H = DISP_H;
+
+    // VO_EnableChn(DISP_CHANNEL, &VoInfo);等价于VO_EnableVideoLayer(DISP_CHANNEL, 0, &VoInfo);
+    if (!VO_EnableChn(DISP_CHANNEL, &VoInfo))
+        printf("VO_EnableChn Failed!!!\n");
 }
 
 void *DecThread(void *Argv)
@@ -175,16 +200,8 @@ void *DecThread(void *Argv)
     VDEC_CHN_ATTR_S attr;
     memset(&attr, 0, sizeof(VDEC_CHN_ATTR_S));
 
-    attr.deType = PAYLOAD_TYPE_H264;
-    attr.u32FrameRate = DEC_RATE;
-    attr.u32PicHight = DEC_WIDTH;
-    attr.u32PicWidth = DEC_HIGH;
-    // 使用默认值
-    attr.BufSize = 0;
-    attr.FormatType = FORMAT_YV12;
-
     int DecChannel;
-    // 创建解码通道
+    // 创建解码通道，attr全部为0，即全部使用默认值
     DecChannel = VDEC_CreateChn(&attr);
 
     if (DecChannel >= 0)
@@ -199,7 +216,7 @@ void *DecThread(void *Argv)
 
     FILE *Fp;
 
-    unsigned int FlenSize;
+    // unsigned int FlenSize;
     unsigned int Flen;
     int i;
     unsigned char *Buf;
@@ -277,6 +294,20 @@ void *DecThread(void *Argv)
                     continue;
                 }
 
+                // 测试解码区域缩放
+                if (i == 50)
+                {
+                    VO_LAYER_RECT Rect;
+                    memset(&Rect, 0, sizeof(VO_LAYER_RECT));
+
+                    Rect.X = 100;
+                    Rect.Y = 100;
+                    Rect.W = DISP_W / 2;
+                    Rect.H = DISP_H / 2;
+                    
+                    VO_Resize(DISP_CHANNEL, DISP_LAYER, &Rect);
+                }
+                
                 if (!VO_SetZoomInWindow(DISP_CHANNEL, DISP_LAYER, &Frame.SrcInfo))
                 {
                     printf("VO_SetZoomInWindow Error!\n");
@@ -316,25 +347,15 @@ void *DecThread(void *Argv)
     Fp = NULL;
 
     VDEC_DestroyChn(DecChannel);
+
+    return NULL;
 }
 
 void DecH264VideoStream(void)
 {
     pthread_t DecPid;
 
-    // 4个图层，从优先级低使能，优先级0 < 1 < 2 < 3
-    // 不允许不使能Channel 0，Layer 0，直接使用Channel 0，Layer 1
-
-    VO_LAYER_INFO VoInfo;
-    memset(&VoInfo, 0, sizeof(VO_LAYER_INFO));
-
-    VoInfo.Rect.X = DISP_X;
-    VoInfo.Rect.Y = DISP_Y;
-    VoInfo.Rect.W = DISP_WIDTH;
-    VoInfo.Rect.H = DISP_HIGH;
-
-    // VO_EnableChn(DISP_CHANNEL, &VoInfo);等价于VO_EnableVideoLayer(DISP_CHANNEL, 0, &VoInfo);
-    VO_EnableChn(DISP_CHANNEL, &VoInfo);
+    DecH264Display();
 
     pthread_create(&DecPid, NULL, DecThread, NULL);
 
@@ -348,11 +369,11 @@ void DecJpgPicuter(void)
     VO_LAYER_INFO VoInfo;
     memset(&VoInfo, 0, sizeof(VO_LAYER_INFO));
 
-    VoInfo.Rect.X = 0;
-    VoInfo.Rect.Y = 0;
+    VoInfo.Rect.X = DISP_X;
+    VoInfo.Rect.Y = DISP_Y;
     // 可以在解码部分缩放，也可以在显示部分缩放
-    VoInfo.Rect.W = DEC_WIDTH;
-    VoInfo.Rect.H = DEC_HIGH;
+    VoInfo.Rect.W = DEC_W;
+    VoInfo.Rect.H = DEC_H;
 
     unsigned int Channel = DISP_CHANNEL;
 
@@ -367,8 +388,8 @@ void DecJpgPicuter(void)
     attr.BufSize = 0;
     attr.FormatType = FORMAT_YV12;
     // 可以不按比例缩放解码
-    attr.u32PicWidth = DISP_WIDTH;
-    attr.u32PicHight = DISP_WIDTH;
+    attr.u32PicWidth = DISP_W;
+    attr.u32PicHight = DISP_H;
 
     int DecChannel;
 
@@ -486,24 +507,25 @@ void DecJpgPicuter(void)
 
 int main(int argc, char **argv)
 {
-    char *short_opt = "h?t:s:c:b:W:H:X:Y:";
+    char *short_opt = "?:t:s:w:h:r:W:H:X:Y:";
 
     static struct option longopts[] =
-        {{"help", no_argument, NULL, 'h'},
+        {{"help", no_argument, NULL, '?'},
          {"type", required_argument, NULL, 't'},
-         {"srcfile", required_argument, NULL, 's'},
-         {"channel", required_argument, NULL, 'c'},
-         {"black", required_argument, NULL, 'b'},
-         {"width", required_argument, NULL, 'W'},
-         {"high", required_argument, NULL, 'H'},
-         {"xaxis", required_argument, NULL, 'X'},
-         {"yaxis", required_argument, NULL, 'Y'},
+         {"sf", required_argument, NULL, 's'},
+         {"sw", required_argument, NULL, 'w'},
+         {"sh", required_argument, NULL, 'h'},
+         {"sr", required_argument, NULL, 'r'},
+         {"dw", required_argument, NULL, 'W'},
+         {"dh", required_argument, NULL, 'H'},
+         {"dx", required_argument, NULL, 'X'},
+         {"dy", required_argument, NULL, 'Y'},
          {NULL, 0, 0, 0}};
 
     int opt;
     int option_index = 0;
 
-    int BlackFlag = 0;
+    DecType = DecH264;
 
     while ((opt = getopt_long(argc, argv, short_opt,
                               longopts, &option_index)) != -1)
@@ -511,7 +533,6 @@ int main(int argc, char **argv)
         switch (opt)
         {
         case '?':
-        case 'h':
             return PrintUsage();
 
         case 't':
@@ -522,20 +543,24 @@ int main(int argc, char **argv)
             strcpy(SrcFile, optarg);
             break;
 
-        case 'c':
-            DISP_CHANNEL = atoi(optarg);
+        case 'w':
+            DEC_W = atoi(optarg);
             break;
 
-        case 'b':
-            BlackFlag = atoi(optarg);
+        case 'h':
+            DEC_H = atoi(optarg);
             break;
         
+        case 'r':
+            DEC_RATE = atoi(optarg);
+            break;
+
         case 'W':
-            DISP_WIDTH = atoi(optarg);
+            DISP_W = atoi(optarg);
             break;
 
         case 'H':
-            DISP_HIGH = atoi(optarg);
+            DISP_H = atoi(optarg);
             break;
 
         case 'X':
@@ -556,11 +581,8 @@ int main(int argc, char **argv)
     // 使能显示
     VO_Enable();
 
-    if (BlackFlag)
-    {
-        // 当UI画在最上层通道时，刷黑，使之透明
-        Ui_Display_Black();
-    }
+    // 最上层刷黑，使之透明
+    FlushFrameBuffer(0x80000000);
 
     switch (DecType)
     {
@@ -573,6 +595,8 @@ int main(int argc, char **argv)
     default:
         break;
     }
+
+    // FlushFrameBuffer(0x1FAAAAAA);
 
     // 禁用显示
     VO_Disable();
