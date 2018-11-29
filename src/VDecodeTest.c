@@ -383,7 +383,7 @@ void DecJpgPicuter(void)
     VDEC_CHN_ATTR_S attr;
     memset(&attr, 0, sizeof(VDEC_CHN_ATTR_S));
 
-    attr.deType = PAYLOAD_TYPE_MJPEG;
+    attr.deType = VDEC_PAYLOAD_TYPE_MJPEG;
     // 使用默认值
     attr.BufSize = 0;
     attr.FormatType = FORMAT_YV12;

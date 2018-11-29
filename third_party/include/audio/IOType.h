@@ -85,7 +85,7 @@ extern "C"
     {
         // 数据缓存块个数
         int u32Blocks;
-        // 每个数据缓存块缓存的录音数据时长(ms)
+        // 每个数据缓存块缓存的音频数据时长(ms)
         int u32BlockTime;
 
     } AIO_CACHE_S;
@@ -93,20 +93,20 @@ extern "C"
     // 音频输入输出属性
     typedef struct AIO_ATTR_S
     {
-        // 采样率
+        // 采样率，默认8000Hz
         AUDIO_SAMPLE_RATE_E enSampleRate;
-        // 位宽
+        // 位宽，默认16bit
         AUDIO_BIT_WIDTH_E enBitWidth;
-        // 同步/异步模式
+        // 同步/异步模式，默认同步
         AIO_MODE_E enWorkMode;
-        // 声道
+        // 声道，默认单声道
         AIO_SOUND_MODE_E enSoundMode;
-        // 缓存属性
+        // 缓存属性，默认3个缓存块，20ms音频数据时长
         AIO_CACHE_S Cache;
         // 异步模式的（录/放）音回调函数
         int(*AudioCallBack)(char *DataBuffer, int DataSize, void *pContext);
         // 异步模式（录/放）音用户数据
-        void *RecordData;
+        void *UserData;
 
     } AIO_ATTR_S;
 
