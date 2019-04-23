@@ -1,0 +1,139 @@
+AEncodeTest.o: AEncodeTest.c \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/stdc-predef.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/stdio.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/features.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/sys/cdefs.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/wordsize.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/gnu/stubs.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/gnu/stubs-soft.h \
+ /arm-toolchain/ext-toolchain/lib/gcc/arm-linux-gnueabi/5.3.1/include/stddef.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/types.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/typesizes.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/libio.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/_G_config.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/wchar.h \
+ /arm-toolchain/ext-toolchain/lib/gcc/arm-linux-gnueabi/5.3.1/include/stdarg.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/stdio_lim.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/sys_errlist.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/stdio.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/stdlib.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/waitflags.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/waitstatus.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/endian.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/endian.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/byteswap.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/byteswap-16.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/sys/types.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/time.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/sys/select.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/select.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/sigset.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/time.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/sys/sysmacros.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/pthreadtypes.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/alloca.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/stdlib-bsearch.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/stdlib-float.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/string.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/xlocale.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/string.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/string2.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/getopt.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/pthread.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/sched.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/sched.h \
+ /arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/setjmp.h \
+ ../third_party/include/audio/codec/AEncApi.h \
+ ../third_party/include/audio/CodecType.h
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/stdc-predef.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/stdio.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/features.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/sys/cdefs.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/wordsize.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/gnu/stubs.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/gnu/stubs-soft.h:
+
+/arm-toolchain/ext-toolchain/lib/gcc/arm-linux-gnueabi/5.3.1/include/stddef.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/types.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/typesizes.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/libio.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/_G_config.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/wchar.h:
+
+/arm-toolchain/ext-toolchain/lib/gcc/arm-linux-gnueabi/5.3.1/include/stdarg.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/stdio_lim.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/sys_errlist.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/stdio.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/stdlib.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/waitflags.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/waitstatus.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/endian.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/endian.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/byteswap.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/byteswap-16.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/sys/types.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/time.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/sys/select.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/select.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/sigset.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/time.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/sys/sysmacros.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/pthreadtypes.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/alloca.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/stdlib-bsearch.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/stdlib-float.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/string.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/xlocale.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/string.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/string2.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/getopt.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/pthread.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/sched.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/sched.h:
+
+/arm-toolchain/ext-toolchain/arm-linux-gnueabi/libc/usr/include/bits/setjmp.h:
+
+../third_party/include/audio/codec/AEncApi.h:
+
+../third_party/include/audio/CodecType.h:

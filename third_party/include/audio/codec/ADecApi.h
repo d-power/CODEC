@@ -13,6 +13,10 @@ Bug report: liuzhengzhong@d-power.com.cn
 #ifndef __ADECAPI_H__
 #define __ADECAPI_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 #include <audio/CodecType.h>
 
@@ -66,7 +70,13 @@ Param:
     Channel     in      通道号
     StreamIn    in      码流属性结构
     StreamOut   out     码流属性结构
-Return: 成功返回1，失败返回0
+Return: 
+    MP3和AAC解码:
+        文件模式:成功返回1，失败返回0 
+        流模式:成功返回解码真实长度, 失败返回 < 0
+        
+    其他解码:
+        成功返回1，失败返回0 
 Others:
 ******************************************************************************/
 int ADEC_SendStream(int Channel, ADUIO_STREAM_S *StreamIn, ADUIO_STREAM_S *StreamOut);
@@ -82,5 +92,8 @@ Others:
 ******************************************************************************/
 int ADEC_ClearChnBuf(int Channel);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !__ADECAPI_H__

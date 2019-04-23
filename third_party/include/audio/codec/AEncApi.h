@@ -13,6 +13,10 @@ Bug report: liuzhengzhong@d-power.com.cn
 #ifndef __AENCAPI_H__
 #define __AENCAPI_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 #include <audio/CodecType.h>
 
@@ -66,7 +70,13 @@ Param:
     Channel     in      通道号
     StreamIn    in      码流属性结构
     StreamOut   out     码流属性结构
-Return: 成功返回1，失败返回0
+Return: 
+    MP3和AAC编码:
+        文件模式:成功返回1，失败返回0 
+        流模式:成功返回编码真实长度, 失败返回 < 0
+        
+    其他编码:
+        成功返回1，失败返回0 
 Others:
 ******************************************************************************/
 int AENC_SendStream(int Channel, ADUIO_STREAM_S *StreamIn, ADUIO_STREAM_S *StreamOut);
@@ -88,10 +98,13 @@ Function: AENC_GetBufferSize
 Description: 获取Buffer长度
 Param:
     Channel     in      通道号
-Return: 成功返回1，失败返回0
+Return: 成功返回一帧音频数据长度，失败返回0
 Others:
 ******************************************************************************/
 int AENC_GetBufferSize(int Channel);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !__AENCAPI_H__

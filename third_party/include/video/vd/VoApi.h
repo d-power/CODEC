@@ -14,6 +14,11 @@ Bug report: liuzhengzhong@d-power.com.cn
 
 #include "VDecApi.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef struct tagVO_SYNC_INFO_S
 {
 
@@ -201,5 +206,8 @@ Others:
 ******************************************************************************/
 int VO_Resize(unsigned int Channel, unsigned int Layer, VO_LAYER_RECT *Rect);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !__DISPLAY_H__

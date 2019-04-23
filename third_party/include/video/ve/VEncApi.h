@@ -12,19 +12,33 @@ Bug report: liuzhengzhong@d-power.com.cn
 #ifndef __VENCAPI_H__
 #define __VENCAPI_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "ViApi.h"
 
-typedef enum _PAYLOAD_TYPE_E
+typedef enum _PAYLOAD_TYPE_E_
 {
     VENC_PAYLOAD_TYPE_H264 = 0,
     VENC_PAYLOAD_TYPE_JPEG,
 
-} PAYLOAD_TYPE_E;
+} VENC_PAYLOAD_TYPE_E;
+
+typedef enum _VENC_PIXEL_FMT_E
+{
+    VENC_PIXEL_FMT_YUV420P = 0,
+    VENC_PIXEL_FMT_YUV420SP,
+    VENC_PIXEL_FMT_YVU420P
+} VENC_PIXEL_FMT_E;
 
 typedef struct _VENC_ATTR_S
 {
     // 编码类型，默认PAYLOAD_TYPE_H264
-    PAYLOAD_TYPE_E enType;
+    VENC_PAYLOAD_TYPE_E enType;
+    // 编码输出格式
+    VENC_PIXEL_FMT_E fmtType;
     // 源图像宽度，默认1280
     unsigned int u32SrcWidth;
     // 源图像高度，默认720
@@ -153,7 +167,7 @@ Description: 向编码器送一帧数据
 Param:
     Channel     in      通道号
     Frame       in      图像数据
-Return: 成功返回1，失败返回0
+Return: VENC_STATUS中的某一个状态
 Others: 在此函数内完成编码，后续即可调用VENC_GetStream获取编码后数据
 ******************************************************************************/
 VENC_STATUS VENC_SendFrame(int Channel, ENC_FRAME_S *Frame);
@@ -200,5 +214,9 @@ Return: 成功返回1，失败返回0
 Others:
 ******************************************************************************/
 int VDEC_GetHeader(int Channel, VENC_STREAM_HEAD *Head);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !__VENCAPI_H__

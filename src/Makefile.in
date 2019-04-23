@@ -90,7 +90,8 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 bin_PROGRAMS = ADecodeTest$(EXEEXT) AEncodeTest$(EXEEXT) \
-	AIOTest$(EXEEXT) VDecodeTest$(EXEEXT) VEncodeTest$(EXEEXT)
+	AIOTest$(EXEEXT) VDecodeTest$(EXEEXT) VEncodeTest$(EXEEXT) \
+	WaterMarkTest$(EXEEXT) H2642JPEGTest$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -114,10 +115,14 @@ am_AEncodeTest_OBJECTS = AEncodeTest.$(OBJEXT)
 AEncodeTest_OBJECTS = $(am_AEncodeTest_OBJECTS)
 am_AIOTest_OBJECTS = AIOTest.$(OBJEXT)
 AIOTest_OBJECTS = $(am_AIOTest_OBJECTS)
+H2642JPEGTest_SOURCES = H2642JPEGTest.c
+H2642JPEGTest_OBJECTS = H2642JPEGTest.$(OBJEXT)
 am_VDecodeTest_OBJECTS = VDecodeTest.$(OBJEXT)
 VDecodeTest_OBJECTS = $(am_VDecodeTest_OBJECTS)
 am_VEncodeTest_OBJECTS = VEncodeTest.$(OBJEXT)
 VEncodeTest_OBJECTS = $(am_VEncodeTest_OBJECTS)
+WaterMarkTest_SOURCES = WaterMarkTest.c
+WaterMarkTest_OBJECTS = WaterMarkTest.$(OBJEXT)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -153,11 +158,11 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(ADecodeTest_SOURCES) $(AEncodeTest_SOURCES) \
-	$(AIOTest_SOURCES) $(VDecodeTest_SOURCES) \
-	$(VEncodeTest_SOURCES)
+	$(AIOTest_SOURCES) H2642JPEGTest.c $(VDecodeTest_SOURCES) \
+	$(VEncodeTest_SOURCES) WaterMarkTest.c
 DIST_SOURCES = $(ADecodeTest_SOURCES) $(AEncodeTest_SOURCES) \
-	$(AIOTest_SOURCES) $(VDecodeTest_SOURCES) \
-	$(VEncodeTest_SOURCES)
+	$(AIOTest_SOURCES) H2642JPEGTest.c $(VDecodeTest_SOURCES) \
+	$(VEncodeTest_SOURCES) WaterMarkTest.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -298,7 +303,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -333,6 +337,16 @@ VEncodeTest_SOURCES = VEncodeTest.c
 VEncodeTest_DEPS = 
 VEncodeTest_LDADD = $(VEncodeTest_DEPS) -lVideoEnc -lcdc_base -lcdc_memory -lcdc_vdecoder -lcdc_ve -lcdc_vencoder
 VEncodeTest_DEPENDENCIES = $(VEncodeTest_DEPS)
+WaterMarkTest_FILES = WaterMarkTest.c
+WaterMarkTest_SOURCE = $(WaterMarkTest_FILES)
+WaterMarkDEPS = 
+WaterMarkTest_LDADD = $(WaterMarkDEPS) -lcdc_base -lcdc_vdecoder -lcdc_memory -lcdc_ve -lcdc_vencoder -lVideoEnc -lVideoDec
+WaterMarkTest_DEPENDENCIES = $(WaterMarkDEPS)
+H2642JPEGTest_FILES = H2642JPEGTest.c
+H2642JPEGTest_SOURCE = $(H2642JPEGTest_FILES)
+H2642JPEGDEPS = 
+H2642JPEGTest_LDADD = $(H2642JPEGDEPS) -lcdc_base -lcdc_vdecoder -lcdc_memory -lcdc_ve -lcdc_vencoder -lVideoEnc -lVideoDec
+H2642JPEGTest_DEPENDENCIES = $(H2642JPEGDEPS)
 all: all-am
 
 .SUFFIXES:
@@ -428,6 +442,10 @@ AIOTest$(EXEEXT): $(AIOTest_OBJECTS) $(AIOTest_DEPENDENCIES) $(EXTRA_AIOTest_DEP
 	@rm -f AIOTest$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(AIOTest_OBJECTS) $(AIOTest_LDADD) $(LIBS)
 
+H2642JPEGTest$(EXEEXT): $(H2642JPEGTest_OBJECTS) $(H2642JPEGTest_DEPENDENCIES) $(EXTRA_H2642JPEGTest_DEPENDENCIES) 
+	@rm -f H2642JPEGTest$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(H2642JPEGTest_OBJECTS) $(H2642JPEGTest_LDADD) $(LIBS)
+
 VDecodeTest$(EXEEXT): $(VDecodeTest_OBJECTS) $(VDecodeTest_DEPENDENCIES) $(EXTRA_VDecodeTest_DEPENDENCIES) 
 	@rm -f VDecodeTest$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(VDecodeTest_OBJECTS) $(VDecodeTest_LDADD) $(LIBS)
@@ -435,6 +453,10 @@ VDecodeTest$(EXEEXT): $(VDecodeTest_OBJECTS) $(VDecodeTest_DEPENDENCIES) $(EXTRA
 VEncodeTest$(EXEEXT): $(VEncodeTest_OBJECTS) $(VEncodeTest_DEPENDENCIES) $(EXTRA_VEncodeTest_DEPENDENCIES) 
 	@rm -f VEncodeTest$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(VEncodeTest_OBJECTS) $(VEncodeTest_LDADD) $(LIBS)
+
+WaterMarkTest$(EXEEXT): $(WaterMarkTest_OBJECTS) $(WaterMarkTest_DEPENDENCIES) $(EXTRA_WaterMarkTest_DEPENDENCIES) 
+	@rm -f WaterMarkTest$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(WaterMarkTest_OBJECTS) $(WaterMarkTest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -445,8 +467,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ADecodeTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AEncodeTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AIOTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/H2642JPEGTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VDecodeTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VEncodeTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WaterMarkTest.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

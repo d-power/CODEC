@@ -29,13 +29,18 @@ typedef enum
 
 } PAYLOAD_TYPE_E;
 
+typedef enum
+{
+    FILE_MODE = 0,
+    STREAM_MODE = 1
+}MODE_E;
 
 typedef struct x5ADEC_CH_ATTR_S
 {
     PAYLOAD_TYPE_E  enType;         // 编解码类型
     unsigned int    u32BufSize;     // 编解码缓冲区长度，字节
     unsigned int    u32SampleRate;  // 原始码流采样率，MP3，AAC编码会用到此字段
-
+    unsigned int    u32Channels;    // 声道(单声道、双声道, 底下默认为单声道)
 } AUDIO_CHN_ATTR_S;
 
 
@@ -43,18 +48,19 @@ typedef struct x5AUDIO_FILE_CODEC_S
 {
     char    *FileName;
     void    *UserData;
-    void (*EncCallback)(unsigned char *Data0,           // 编码回调，编码器每次会进入该回调函数取数据
+    void (*EncCallback)(unsigned char *Data0,       // 编码回调，编码器每次会进入该回调函数取数据
                         unsigned char *Data1,       // Data1暂时未用
                         int EncLen,                 // 编码器回调上来的数据长度，用户根据此数据长度往Data0里写数据
                         int *End,                   // 结束标志，当*End=1时编码结束
                         void *UserData);            // 用户自定义数据
 
-    void (*DecCallback)(unsigned char *Data0,           // 解码回调，解码后的数据地址
+    void (*DecCallback)(unsigned char *Data0,       // 解码回调，解码后的数据地址
                         unsigned char *Data1,       // 若双声道，则Data1不为空
                         int DecLen,                 // 解码器回调上来的数据长度，是解码后PCM数据的长度
                         int Channel,                // 原始文件若单声道，Channel=1，若双声道，Channel=2
                         int SampleRate,             // 原始文件中的采样率
                         int BitRate,                // 原始文件中的比特率
+                        int BitWidth,               // 原始文件的比特位宽
                         void *UserData);            // 用户自定义数据
 
 } AUDIO_FILE_CODEC;
@@ -70,6 +76,7 @@ typedef struct x5AUDIO_STREAM_CODEC_S
 
 typedef struct x5AUDIO_STREAM_S
 {
+    MODE_E mode;                            // MP3和AAC编解码有效
     union
     {
         AUDIO_FILE_CODEC        File;       // 文件式编解码，MP3、AAC

@@ -13,6 +13,10 @@ Bug report: wangerchi@d-power.com.cn
 #ifndef __AIAPI_H__
 #define __AIAPI_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 #include <audio/IOType.h>
 
@@ -206,5 +210,8 @@ Others:
 ******************************************************************************/
 int AI_SetSystemVolume(int s32Volume);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !__AIAPI_H__

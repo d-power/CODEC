@@ -1,9 +1,25 @@
 更新日志文件
 
+Version 1.3.7:
+- DecCallback 函数添加返回音频位宽
+- VENC_ATTR_S 结构体添加编码输出格式
+- 添加h264转jpg示例
+
+Version 1.3.6:
+- ENC_FRAME_S结构体添加裁剪图像属性
+- 所有头文件加上extern "c"
+- 修改VEncApi.h 和 VDecApi.h的 _PAYLOAD_TYPE_E的定义
+- 修改MP3和AAC编解码同时支持流式和文件模式 
+- 修改所有XX_Enable和XX_Disable接口按初始化次数做释放
+
+Version 1.3.5:
+- 添加VI_AdjustCscParam调节视频亮度、对比度、饱和度、色彩度(仅适用于np6134解码芯片)
+
+Version 1.3.4:
+- 添加打OSD的接口
+
 Version 1.3.3:
-- 合并lsl分支
-- 修改VO_Resize函数中缺少对空指针的判断
-- 修改AO_Enable函数连续初始化两次,第二次初始化返回失败
+- 修改下一些函数不判断有效性
 
 Version 1.3.2:
 - 编码示例程序中，加入jpg编码的示例

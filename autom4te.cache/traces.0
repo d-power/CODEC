@@ -2462,7 +2462,6 @@ m4trace:configure.ac:5: -1- m4_pattern_allow([^datadir$])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^sysconfdir$])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^sharedstatedir$])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^localstatedir$])
-m4trace:configure.ac:5: -1- m4_pattern_allow([^runstatedir$])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^includedir$])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^oldincludedir$])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^docdir$])
@@ -2490,7 +2489,7 @@ m4trace:configure.ac:5: -1- m4_pattern_allow([^host_alias$])
 m4trace:configure.ac:5: -1- m4_pattern_allow([^target_alias$])
 m4trace:configure.ac:13: -1- m4_pattern_allow([^CODEC_VERSION$])
 m4trace:configure.ac:15: -1- _m4_warn([obsolete], [The macro `AC_CANONICAL_SYSTEM' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:1868: AC_CANONICAL_SYSTEM is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:1857: AC_CANONICAL_SYSTEM is expanded from...
 configure.ac:15: the top level])
 m4trace:configure.ac:15: -1- m4_pattern_allow([^build$])
 m4trace:configure.ac:15: -1- m4_pattern_allow([^build_cpu$])

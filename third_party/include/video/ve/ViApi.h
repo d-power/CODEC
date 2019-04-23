@@ -14,6 +14,11 @@ Bug report: liuzhengzhong@d-power.com.cn
 
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef enum _VI_DATA_FMT_E
 {
     VI_DATA_FMT_YUV420 = 0,
@@ -23,6 +28,14 @@ typedef enum _VI_DATA_FMT_E
     VI_DATA_FMT_BUT,
 
 } VI_DATA_FMT_E;
+
+typedef struct _RECT_S
+{
+    int Left;
+    int Top;
+    int Width;
+    int Height;
+}RECT_S;
 
 typedef struct _SIZE_S
 {
@@ -81,8 +94,39 @@ typedef struct _ENC_FRAME_S
     unsigned int Flags;
     // 图像输入大小，该属性已被废弃，赋任何值都没有意义
     SIZE_S stSize;
-
+    // 是否裁剪图像图像 0为禁用 1为启用(注意调用前一定要将这个结构体清空,若需要裁剪图像在赋值1)
+    int bCrop;
+    // 裁剪区域
+    RECT_S CropRect;
 } ENC_FRAME_S;
+
+// 单个水印的属性
+typedef struct _WaterMarkInfo_S
+{
+    // 水印起始横坐标
+    int X;
+    // 水印起始横坐标
+    int Y;
+    // 水印显示内容
+    char Buffer[64];
+}WaterMarkInfo_S;
+
+// 多个水印的属性
+typedef struct _MWaterMarkInfo_S
+{   
+    // 水印数量,最多5条
+    int Count;
+    WaterMarkInfo_S *pInfo;
+}MWaterMarkInfo_S;
+
+//字符和图片的映射表,用户自行映射好关系
+typedef struct _PicMap_S
+{
+    //单个字符
+    char val[4];
+    //图片名字,只支持bmp
+    char picname[32];
+}PicMap_S;
 
 /******************************************************************************
 Function: EnableDev
@@ -160,5 +204,59 @@ Return: 返回当前帧深度值
 Others: 此函数已被弃用
 ******************************************************************************/
 int VI_GetFrameDepth(void);
+
+/******************************************************************************
+Function: VI_InitWaterMark
+Description: 初始化水印
+Param: 
+    PicPath   in      图片位置
+    X         in      水印起始横坐标
+    Y         in      水印起始纵坐标
+    Count     in      pMap的长度
+    pMap      in      图片和字符映射关系
+Return: 成功返回1，失败返回0
+Others: None
+******************************************************************************/
+int VI_InitWaterMark(char *PicPath, MWaterMarkInfo_S *pInfo, int Count, PicMap_S *pMap);
+
+/******************************************************************************
+Function: VI_ReleaseWaterMark
+Description: 反初始化水印
+Param: None
+Return: None
+Others: None
+******************************************************************************/
+void VI_ReleaseWaterMark();
+
+/******************************************************************************
+Function: VI_ReleaseWaterMark
+Description: 反初始化水印
+Param: 
+    InWidth     in      图像输入宽度
+    InHigh      in      图像输入高度
+    VirBufferY  in      虚拟缓冲区地址
+    Count       in      pMap的长度
+    pMap        in      图片和字符映射关系
+Return: None
+Others: None
+******************************************************************************/
+void VI_DoWaterMark(unsigned int InWidth, unsigned int InHigh, unsigned char *VirBufferY, int count, PicMap_S *pMap);
+
+/******************************************************************************
+Function: VI_AdjustCscParam(仅支持nvp6134解码芯片使用)
+Description: 调整视频亮度、对比度、饱和度、色彩度
+Param: 
+    bright     in      亮度
+    contrast   in      对比度
+    saturation in      饱和度
+    hue        in      色彩度
+Return: 成功返回1，失败返回-1
+Others: None
+******************************************************************************/
+int VI_AdjustCscParam(int bright, int contrast, int saturation, int hue);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !__VIAPI_H__

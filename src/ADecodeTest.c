@@ -166,16 +166,31 @@ void Mp3DecCallback(unsigned char *Data0,
                     int Channel,
                     int SampleRate,
                     int BitRate,
+                    int BitWidth,
                     void *UserData)
 {
     FILE *Fd = (FILE *)UserData;
     // 按照回调函数传递上来的长度，把Data0数据写入文件
     // 若原始编码文件是单声道，则Data1为空
     // 若原始编码文件是双声道，则Data0和Data1分别保存两个声道的数据
-    // 两个声道的数据长度都为DecLen
-    // X5_ADEC_SendStream解码完整个文件后才会返回
-    // 若回调函数中阻塞，X5_ADEC_SendStream也会阻塞
-    fwrite(Data0, 1, DecLen, Fd);
+    // 单声道时DecLen是声音数据长度,双声道时每个声道的声音数据长度为DecLen / 2
+    // ADEC_SendStream解码完整个文件后才会返回
+    // 若回调函数中阻塞，ADEC_SendStream也会阻塞 
+    if(Data1)
+    {   
+        // 双声道时,左右声道数据要交叉写入文件
+        int i;
+        int len = DecLen / 2;
+        for(i = 0; i < len / 2; i++)
+        {
+            fwrite(&Data0[i * 2], 1, 2, Fd); 
+            fwrite(&Data1[i * 2], 1, 2, Fd);
+        }
+    }
+    else
+        fwrite(Data0, 1, DecLen, Fd); 
+    
+    printf("DecLen:%d Channel:%d SampleRate:%d BitRate:%d BitWidth:%d \n", DecLen, Channel, SampleRate, BitRate, BitWidth);
 }
 
 void FileDec(DecType_E Type)

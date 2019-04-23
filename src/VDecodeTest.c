@@ -267,7 +267,7 @@ void *DecThread(void *Argv)
         memset(&Stat, 0, sizeof(VDEC_CHN_STAT_S));
 
         // 获取当前状态
-        if (!VDEC_Query(0, &Stat))
+        if (!VDEC_Query(DecChannel, &Stat))
         {
             printf("VDEC_Query Error!\n");
             continue;
@@ -442,7 +442,7 @@ void DecJpgPicuter(void)
     memset(&Stat, 0, sizeof(VDEC_CHN_STAT_S));
 
     // 获取当前状态
-    if (!VDEC_Query(0, &Stat))
+    if (!VDEC_Query(DecChannel, &Stat))
     {
         printf("VDEC_Query Error!\n");
     }

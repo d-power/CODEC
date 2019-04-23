@@ -13,6 +13,11 @@ Bug report: wangerchi@d-power.com.cn
 #ifndef __AOAPI_H__
 #define __AOAPI_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <audio/IOType.h>
 
 
@@ -222,5 +227,8 @@ Others:
 ******************************************************************************/
 int AO_SetSystemVolume(int s32Volume);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !__AUDIO_OUT_API_H__

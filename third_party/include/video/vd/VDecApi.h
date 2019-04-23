@@ -12,6 +12,11 @@ Bug report: liuzhengzhong@d-power.com.cn
 #ifndef __VDECAPI_H__
 #define __VDECAPI_H__
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 typedef long long int64_t;
 
 typedef enum _PAYLOAD_TYPE_E
@@ -19,7 +24,7 @@ typedef enum _PAYLOAD_TYPE_E
     VDEC_PAYLOAD_TYPE_H264 = 1,
     VDEC_PAYLOAD_TYPE_MJPEG = 2,
 
-} PAYLOAD_TYPE_E;
+} VDEC_PAYLOAD_TYPE_E;
 
 typedef enum _PIXEL_FORMAT_E
 {
@@ -32,7 +37,7 @@ typedef enum _PIXEL_FORMAT_E
 typedef struct _VDEC_CHN_ATTR_S
 {
     // 解码类型，默认PAYLOAD_TYPE_H264
-    PAYLOAD_TYPE_E deType;
+    VDEC_PAYLOAD_TYPE_E deType;
     // 解码输出格式，默认YV12
     PIXEL_FORMAT_E FormatType;
     // 解码宽度，H264流中携带长宽信息，所以可以不指定
@@ -62,7 +67,7 @@ typedef struct _VDEC_STREAM_S
 typedef struct _VDEC_CHN_STAT_S
 {
     // 解码类型
-    PAYLOAD_TYPE_E deType;
+    VDEC_PAYLOAD_TYPE_E deType;
     // 缓冲区内有效未解码数据大小，字节
     unsigned int u32LeftPics;
     // 缓冲区内有效未解码数据帧数
@@ -292,5 +297,9 @@ Others: X5_VDEC_GetImage与X5_VDEC_ReleaseImage必须串行，成对出现
         不允许出现调用两次X5_VDEC_GetImage再X5_VDEC_ReleaseImage两次的情况
 ******************************************************************************/
 int VDEC_ReleaseImage(int Channel, VDEC_FRAME_S *Frame);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // !__VDECAPI_H__
