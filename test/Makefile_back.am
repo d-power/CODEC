@@ -1,0 +1,62 @@
+bin_PROGRAMS = VDecodeTest ADecodeTest AEncodeTest AIOTest VEncodeTest VPreviewTest
+# noinst_PROGRAMS = AudioCodecTest
+
+AM_CFLAGS = -I$(top_builddir)/include/Standard
+AM_CPPFLAGS = -I$(top_builddir)/include/Standard
+
+ADecodeTest_FILES = ADecodeTest.c
+ADecodeTest_SOURCES = $(ADecodeTest_FILES)
+ADDEPS = \
+   ../../src/audio/codec/libAudioCodec.la
+ADecodeTest_LDADD = $(ADDEPS)
+ADecodeTest_DEPENDENCIES = $(ADDEPS)
+
+
+AEncodeTest_FILES = AEncodeTest.c
+AEncodeTest_SOURCES = $(AEncodeTest_FILES)
+AEDEPS = \
+    ../../src/audio/codec/libAudioCodec.la
+AEncodeTest_LDADD = $(AEDEPS)
+AEncodeTest_DEPENDENCIES = $(AEDEPS)
+
+
+VDecodeTest_FILES = VDecodeTest.c
+VDecodeTest_SOURCES = $(VDecodeTest_FILES)
+VDDEPS = \
+    ../../src/video/vd/libVideoDec.la
+VDecodeTest_LDADD = $(VDDEPS) -lcdc_base -lcdc_vdecoder -lcdc_memory -lcdc_ve
+VDecodeTest_DEPENDENCIES = $(VDDEPS)
+
+
+VEncodeTest_FILES = VEncodeTest.c
+VEncodeTest_SOURCES = $(VEncodeTest_FILES)
+VEDEPS = \
+    ../../src/video/ve/libVideoEnc.la
+VEncodeTest_LDADD = $(VEDEPS) -lcdc_base -lcdc_vdecoder -lcdc_memory -lcdc_ve -lcdc_vencoder
+VEncodeTest_DEPENDENCIES = $(VEDEPS)
+
+
+VPreviewTest_FILES = VPreviewTest.c
+VPreviewTest_SOURCE = $(VPreviewTest_FILES)
+VPDEPS = \
+    ../../src/video/vd/libVideoDec.la \
+    ../../src/video/ve/libVideoEnc.la
+VPreviewTest_LDADD = $(VPDEPS) -lcdc_base -lcdc_vdecoder -lcdc_memory -lcdc_ve -lcdc_vencoder
+VPreviewTest_DEPENDENCIES = $(VPDEPS)
+
+
+# AudioCodecTest_FILES = AudioCodecTest.c
+# AudioCodecTest_SOURCES = $(AudioCodecTest_FILES)
+# AudioCodecTest_DEPS = \
+#     ../../src/audio/FFMPEG/libffmpegcodec.la
+# AudioCodecTest_LDADD = $(AudioCodecTest_DEPS)
+# AudioCodecTest_DEPENDENCIES = $(AudioCodecTest_DEPS)
+
+
+AIOTest_FILES = AIOTest.c
+AIOTest_SOURCES = $(AIOTest_FILES)
+AIOTest_DEPS = \
+    ../../src/audio/AI/libAudioIn.la \
+    ../../src/audio/AO/libAudioOut.la
+AIOTest_LDADD = $(AIOTest_DEPS) -lasound -lAudioCore
+AIOTest_DEPENDENCIES = $(AIOTest_DEPS)
